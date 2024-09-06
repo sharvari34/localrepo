@@ -2,7 +2,7 @@ import streamlit as st
 from fpdf import FPDF
 import base64
 
-def create_pdf(name, email, linkedin, address, education, skills, projects, certifications):
+def create_pdf(name, contact, email, phone linkedin, github, portfolio, address, education, skills, projects, rel_exp):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font('Arial', size=12)
@@ -14,18 +14,16 @@ def create_pdf(name, email, linkedin, address, education, skills, projects, cert
 
     # Contact Information
     pdf.set_font('Arial', size=12)
+    pdf.cell(200, 10, txt=f'Contact: {contact}', ln=True, align='L')
+
     pdf.cell(200, 10, txt=f'Email: {email}', ln=True, align='L')
     pdf.cell(200, 10, txt=f'LinkedIn: {linkedin}', ln=True, align='L')
+    pdf.cell(200, 10, txt=f'GitHub: {github}', ln=True, align='L')
+    pdf.cell(200, 10, txt=f'Portfolio: {portfolio}', ln=True, align='L')
     pdf.cell(200, 10, txt=f'Address: {address}', ln=True, align='L')
     pdf.ln(10)
     
-    # Education
-    pdf.set_font("Arial", 'B', 14)
-    pdf.cell(200, 10, txt='Education', ln=True, align='L')
-    pdf.set_font('Arial', size=12)
-    for edu in education:
-        pdf.multi_cell(0, 10, f"Institution: {edu['institution']}\nPeriod: {edu['period']}\nCGPA: {edu['cgpa']}")
-        pdf.ln(5)
+   
 
     # Skills
     pdf.set_font("Arial", 'B', 14)
@@ -41,12 +39,20 @@ def create_pdf(name, email, linkedin, address, education, skills, projects, cert
         pdf.multi_cell(0, 10, f"Title: {project['title']}\nDescription: {project['description']}")
         pdf.ln(5)
 
-    # Certifications
+    # Relevant Experience
     pdf.set_font("Arial", 'B', 14)
-    pdf.cell(200, 10, txt='Certifications', ln=True, align='L')
+    pdf.cell(200, 10, txt='Relevant Experience', ln=True, align='L')
     pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 10, certifications)
+    pdf.multi_cell(0, 10, rel_exp)
 
+
+     # Education
+    pdf.set_font("Arial", 'B', 14)
+    pdf.cell(200, 10, txt='Education', ln=True, align='L')
+    pdf.set_font('Arial', size=12)
+    for edu in education:
+        pdf.multi_cell(0, 10, f"Institution: {edu['institution']}\nPeriod: {edu['period']}\nCGPA: {edu['cgpa']}")
+        pdf.ln(5)
     return pdf
 
 def main():    
@@ -56,8 +62,12 @@ def main():
     with st.sidebar:
         st.subheader("Personal Info")
         name = st.text_input('Name')
-        email = st.text_input('Email')
-        linkedin = st.text_input("LinkedIn URL")
+        contact=st.text_input('Contact no.')
+        
+        email=st.text_input('Email')
+        linkedin=st.text_input("LinkedIn URL")
+        github=st.text_input("GitHub URL")
+        porfolio=st.text_input("Portfolio URL")
         address = st.text_input('Address')
 
         st.subheader('Education')
@@ -80,13 +90,18 @@ def main():
             description = st.text_input(f'Project Description {i+1}', key=f'project_description_{i}')
             projects.append({'title': title, 'description': description})
 
-        st.subheader('Certifications')
-        certifications = st.text_area('Certifications')
+        st.subheader('Relevant Experience')
+        certifications = st.text_area('Relevant Experience')
  
     # Display
     st.write(f'## {name}')
+    st.write(f'**Contact:**{contact}')
+
     st.write(f'**Email:** {email}')
+
     st.write(f'**LinkedIn:** {linkedin}')
+    st.write(f'**GitHub:** {github}')
+    st.write(f'**Portfolio:** {portfolio}')
     st.write(f'**Address:** {address}')
     st.write(f'### Education')
     for edu in education:
@@ -105,12 +120,12 @@ def main():
         st.write(f"Description: {project['description']}")
         st.write('')
 
-    st.write('### Certifications')  
-    st.write(certifications)  
+    st.write('### Relevant Experience')  
+    st.write(rel_exp)  
 
     # PDF and Download Link
     if st.button('Download Resume as PDF'):
-        pdf = create_pdf(name, email, linkedin, address, education, skills, projects, certifications)
+        pdf = create_pdf(name, contact, email, linkedin, github, portfolio, address, education, skills, projects, rel_exp)
         pdf_output = f"{name.replace(' ', '_')}_resume.pdf"
         pdf.output(pdf_output)
 
